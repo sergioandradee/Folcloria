@@ -23,6 +23,7 @@
   --shadow: 0 8px 22px rgba(15, 77, 43, .13);
   --shadow-sm: 0 3px 10px rgba(15, 77, 43, .10);
   --tab-h: 64px;
+  --gx: 18px; /* margen lateral de las vistas (crece en tablet) */
   --sat: env(safe-area-inset-top, 0px);
   --sab: env(safe-area-inset-bottom, 0px);
   --sal: env(safe-area-inset-left, 0px);
@@ -46,13 +47,8 @@ h1, h2, h3, p { margin: 0; }
 
 #app {
   position: fixed; inset: 0;
-  max-width: 560px; margin: 0 auto;
   background: var(--bg);
   overflow: hidden;
-}
-@media (min-width: 600px) {
-  body { background: linear-gradient(160deg, var(--green-900), var(--blue)); }
-  #app { top: 16px; bottom: 16px; border-radius: 34px; box-shadow: 0 20px 60px rgba(0,0,0,.35); }
 }
 
 /* ---------- Vistas ---------- */
@@ -62,7 +58,7 @@ main { position: absolute; inset: 0; }
   overflow-y: auto; overflow-x: hidden;
   -webkit-overflow-scrolling: touch;
   scroll-behavior: smooth;
-  padding: calc(var(--sat) + 18px) calc(var(--sar) + 18px) calc(var(--tab-h) + var(--sab) + 28px) calc(var(--sal) + 18px);
+  padding: calc(var(--sat) + 18px) calc(var(--sar) + var(--gx)) calc(var(--tab-h) + var(--sab) + 28px) calc(var(--sal) + var(--gx));
   display: none;
 }
 .view.active { display: block; animation: viewIn .32s ease both; }
@@ -92,7 +88,7 @@ main { position: absolute; inset: 0; }
 /* ---------- INICIO ---------- */
 .hero {
   position: relative; overflow: hidden;
-  margin: calc(var(--sat) * -1 - 18px) calc(var(--sar) * -1 - 18px) 0 calc(var(--sal) * -1 - 18px);
+  margin: calc(var(--sat) * -1 - 18px) calc(var(--sar) * -1 - var(--gx)) 0 calc(var(--sal) * -1 - var(--gx));
   padding: calc(var(--sat) + 22px) 22px 78px;
   /* Fondo de respaldo (se ve solo si el pattern no carga) */
   background: linear-gradient(170deg, var(--green-600) 0%, var(--green-700) 60%, var(--green-900) 100%);
@@ -344,3 +340,182 @@ main { position: absolute; inset: 0; }
 .tabbar a[data-tab="info"] .ti { --ic: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z'/%3E%3C/svg%3E"); }
 
 :focus-visible { outline: 3px solid var(--blue); outline-offset: 2px; }
+
+/* ==========================================================
+   RESPONSIVO — celular / iPad
+   ========================================================== */
+
+/* Mapa: la imagen siempre cabe completa en el visor (cualquier tamaño u orientación) */
+@supports (width: 1cqw) {
+  .map-viewport { container-type: size; }
+  .map-stage { width: min(100cqw, calc(100cqh * 16 / 9)); }
+}
+
+/* Cursor con mouse/trackpad (iPad con teclado) */
+@media (hover: hover) {
+  .quick-card:hover, .legend-card:hover { transform: translateY(-3px); }
+  .chip:hover, .pager button:hover, .back:hover { background: var(--green-100); }
+  .chip.on:hover { background: var(--green-600); }
+  .links a:hover { background: var(--green-700); }
+}
+
+/* ---------- Celulares pequeños (iPhone SE / mini, Android compactos) ---------- */
+@media (max-width: 370px) {
+  :root { --gx: 14px; --radius: 22px; }
+  .page-head h1 { font-size: 24px; }
+  .welcome-card h1 { font-size: 23px; }
+  .welcome-card p, .block p, .block li, .sheet p { font-size: 15px; }
+  .btn { font-size: 16px; padding: 0 22px; }
+  .quick, .cards { gap: 10px; }
+  .quick-card { min-height: 112px; padding: 12px; }
+  .quick-card .emoji { font-size: 32px; }
+  .quick-card strong { font-size: 16px; }
+  .legend-card h3 { font-size: 15px; }
+  .acc-btn { font-size: 16px; padding: 10px 14px; }
+  .acc-btn .ic { width: 36px; height: 36px; font-size: 19px; }
+  .tabbar a { font-size: 10.5px; }
+}
+
+/* ---------- Tablet (iPad vertical y horizontal) ---------- */
+@media (min-width: 700px) {
+  :root {
+    --gx: max(32px, calc((100vw - 880px) / 2)); /* contenido centrado, máx. ~880px */
+    --tab-h: 70px;
+    --radius: 30px;
+  }
+  .view:not(#view-inicio) { padding-top: calc(var(--sat) + 28px); }
+  .view:not(.view-map) { padding-bottom: calc(var(--tab-h) + var(--sab) + 48px); }
+  .view-map { --gx: 28px; }
+
+  .page-head { margin-bottom: 20px; }
+  .page-head h1 { font-size: 36px; }
+  .page-head p { font-size: 18px; }
+
+  /* Barra inferior flotante y centrada */
+  .tabbar {
+    left: 50%; right: auto; width: min(640px, calc(100% - 48px));
+    transform: translateX(-50%);
+    bottom: calc(var(--sab) + 14px); height: var(--tab-h);
+    padding: 6px 12px; border-radius: 32px;
+    border: 1px solid rgba(15,77,43,.1); box-shadow: var(--shadow);
+  }
+  .tabbar a { font-size: 13px; }
+  .ti { width: 30px; height: 30px; }
+  .toast { bottom: calc(var(--tab-h) + var(--sab) + 40px); font-size: 16px; }
+
+  /* Inicio */
+  .hero { padding: calc(var(--sat) + 36px) 40px 96px; border-radius: 0 0 60px 60px; }
+  .logo { width: min(60%, 460px); }
+  .mascot-hero { width: min(38%, 300px); }
+  .welcome { margin-top: -64px; }
+  .welcome-card { max-width: 640px; margin: 0 auto; padding: 32px 28px; }
+  .welcome-card h1 { font-size: 36px; }
+  .welcome-card p { font-size: 20px; }
+  .btn { min-height: 60px; font-size: 20px; padding: 0 40px; }
+  .quick { grid-template-columns: repeat(4, 1fr); gap: 18px; margin-top: 28px; }
+  .quick-card { min-height: 170px; padding: 18px; }
+  .quick-card .emoji { font-size: 48px; top: 14px; right: 16px; }
+  .quick-card strong { font-size: 21px; }
+  .quick-card small { font-size: 15px; }
+  .install-tip { font-size: 16px; }
+
+  /* Mapa */
+  .map-viewport { min-height: 340px; }
+  .map-controls { right: 18px; bottom: 18px; gap: 10px; }
+  .map-controls button { width: 56px; height: 56px; font-size: 28px; }
+  .hotspot { width: 58px; height: 58px; }
+  .map-legend { justify-content: center; flex-wrap: wrap; overflow: visible; padding-bottom: calc(var(--tab-h) + var(--sab) + 34px); }
+  .chip { min-height: 46px; padding: 0 20px; font-size: 16px; }
+  .sheet { max-width: 640px; margin: 0 auto; padding: 14px 32px calc(var(--sab) + 32px); }
+  .sheet h2 { font-size: 28px; }
+  .sheet p { font-size: 18px; }
+
+  /* Leyendas */
+  .cards { grid-template-columns: repeat(4, 1fr); gap: 18px; }
+  .legend-card h3 { font-size: 19px; }
+  .legend-card small { font-size: 14px; }
+  .fav { width: 48px; height: 48px; }
+
+  /* Mascota / detalle */
+  .profile-title h1 { font-size: 40px; }
+  .profile-title p { font-size: 18px; }
+  .block { padding: 22px 24px; }
+  .block h2 { font-size: 22px; }
+  .block p, .block li { font-size: 18px; }
+
+  /* Información */
+  .acc-btn { font-size: 20px; min-height: 72px; }
+  .acc-body { font-size: 18px; }
+  .acc-body table { font-size: 18px; }
+}
+
+/* iPad vertical ancho / horizontal: logo y mascota lado a lado */
+@media (min-width: 900px) {
+  .hero { display: flex; align-items: center; justify-content: center; gap: 40px; padding-bottom: 100px; }
+  .logo { flex: 0 1 42%; width: auto; margin: 0; }
+  .mascot-hero { flex: 0 1 20%; width: auto; margin: 0; }
+}
+
+/* Mascota / detalle de leyenda en dos columnas, Información en dos columnas */
+@media (min-width: 800px) {
+  :root { --art-w: clamp(280px, 36vw, 400px); }
+  #view-mascota.active, #view-leyenda.active {
+    display: grid; grid-template-columns: var(--art-w) minmax(0, 1fr);
+    column-gap: 36px; align-content: start; align-items: start;
+  }
+  #view-mascota .back, #view-leyenda .back { grid-column: 1 / -1; justify-self: start; }
+  #view-mascota > .profile-art, #view-leyenda > .detail-head {
+    grid-column: 1; grid-row: 2 / span 12;
+    position: sticky; top: 0; width: 100%; max-width: none; margin: 0;
+  }
+  #view-leyenda .detail-head .profile-art { max-width: none; }
+  #view-mascota .profile-title, #view-leyenda .profile-title { grid-column: 2; text-align: left; margin-top: 0; }
+  #view-mascota .block, #view-leyenda .block, #view-leyenda .pager { grid-column: 2; }
+  .acc { grid-template-columns: 1fr 1fr; align-items: start; gap: 16px; }
+}
+
+/* ---------- Celular en horizontal (poca altura) ---------- */
+@media (orientation: landscape) and (max-height: 520px) {
+  :root { --tab-h: 52px; }
+  .view:not(#view-inicio) { padding-top: calc(var(--sat) + 12px); }
+  .page-head { margin-bottom: 8px; }
+  .page-head h1 { font-size: 22px; }
+  .page-head p { display: none; }
+
+  .hero { display: flex; align-items: center; justify-content: center; gap: 24px;
+          padding: calc(var(--sat) + 14px) 18px 64px; border-radius: 0 0 32px 32px; }
+  .logo { flex: 0 1 44%; width: auto; margin: 0; }
+  .mascot-hero { flex: 0 1 22%; width: auto; margin: 0; }
+  .welcome { margin-top: -44px; }
+  .welcome-card { max-width: 560px; margin: 0 auto; padding: 16px; }
+  .welcome-card h1 { font-size: 22px; }
+  .welcome-card p { font-size: 14px; margin-top: 4px; }
+  .btn { min-height: 44px; font-size: 16px; margin-top: 10px; }
+  .quick { grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 14px; }
+  .quick-card { min-height: 96px; padding: 10px; }
+  .quick-card .emoji { font-size: 30px; }
+  .quick-card strong { font-size: 15px; }
+  .quick-card small { display: none; }
+
+  .view:not(.view-map) { padding-bottom: calc(var(--tab-h) + var(--sab) + 20px); }
+  /* barra inferior pegada al borde, como en celular */
+  .tabbar { left: 0; width: 100%; transform: none; bottom: 0; border-radius: 0; box-shadow: none;
+            height: calc(var(--tab-h) + var(--sab)); padding: 3px calc(var(--sar) + 10px) calc(var(--sab) + 3px) calc(var(--sal) + 10px); }
+  #view-mapa .page-head { display: none; }
+  .map-legend { flex-wrap: nowrap; overflow-x: auto; justify-content: flex-start; padding: 8px 0 calc(var(--tab-h) + var(--sab) + 8px); }
+  .chip { min-height: 36px; font-size: 14px; padding: 0 14px; }
+  .map-controls button { width: 40px; height: 40px; font-size: 20px; }
+  .hotspot { width: 40px; height: 40px; }
+  .hero { padding-bottom: 56px; }
+  .logo { flex-basis: 36%; }
+  .mascot-hero { flex-basis: 18%; }
+  .tabbar a { flex-direction: row; gap: 8px; font-size: 13px; }
+  .ti { width: 22px; height: 22px; }
+  .toast { bottom: calc(var(--tab-h) + var(--sab) + 10px); }
+
+  .map-viewport { min-height: 120px; }
+  .map-legend { padding-top: 8px; }
+  .cards { grid-template-columns: repeat(4, 1fr); }
+  .sheet { max-width: 560px; margin: 0 auto; max-height: 90%; }
+  :root { --art-w: 220px; }
+}

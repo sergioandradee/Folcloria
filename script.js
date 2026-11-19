@@ -178,7 +178,7 @@ const Fav = (() => {
    ---------------------------------------------------------- */
 function renderInicio() {
   const w = CONFIG.welcome, a = CONFIG.assets;
-  const isiOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+  const isiOS = /iphone|ipad|ipod/i.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1); /* incluye iPad con iPadOS */
   const standalone = window.navigator.standalone || matchMedia('(display-mode: standalone)').matches;
   const showTip = isiOS && !standalone && !sessionStorage.getItem('folcloria:tip');
   $('#view-inicio').innerHTML = `
@@ -329,6 +329,10 @@ const MapView = (() => {
     $('#zoomIn').onclick = () => zoomAt(null, null, 1.5);
     $('#zoomOut').onclick = () => zoomAt(null, null, 1 / 1.5);
     $('#zoomReset').onclick = () => { s = 1; tx = ty = 0; apply(true); };
+    /* iPad/celular: al rotar o cambiar tamaño, recentrar el mapa */
+    const refit = () => requestAnimationFrame(() => { if (vp.clientWidth > 0) apply(); });
+    window.addEventListener('resize', refit);
+    window.addEventListener('orientationchange', refit);
     built = true;
   }
 

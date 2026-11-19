@@ -1,7 +1,7 @@
 /* FOLCLORIA — service worker (offline)
    Al cambiar cualquier archivo, subir el número de VERSION para que
    los visitantes reciban la actualización. */
-const VERSION = 'v1';
+const VERSION = 'v2';
 const CACHE = 'folcloria-' + VERSION;
 
 const CORE = [
